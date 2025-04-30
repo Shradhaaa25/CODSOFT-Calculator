@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculator</title>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f4f4f9;
+  }
+  .calculator {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 280px;
+  }
+  .display {
+    background-color: #333;
+    color: white;
+    font-size: 2.5rem;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: right;
+    margin-bottom: 20px;
+  }
+  .buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  .button {
+    background-color: #eee;
+    border: none;
+    font-size: 1.5rem;
+    padding: 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .button:hover {
+    background-color: #ddd;
+  }
+  .operator {
+    background-color: #ff9f00;
+    color: white;
+  }
+  .operator:hover {
+    background-color: #ff6f00;
+  }
+  .equals {
+    background-color: #00bcd4;
+    color: white;
+    grid-column: span 2;
+  }
+  .equals:hover {
+    background-color: #008c9e;
+  }
+  button:focus {
+    outline: none;
+  }
+</style>
+</head>
+<body>
+  <div class="calculator">
+    <div class="display" id="display"></div>
+    <div class="buttons">
+      <button class="button" data-value="7">7</button>
+      <button class="button" data-value="8">8</button>
+      <button class="button" data-value="9">9</button>
+      <button class="button operator" data-value="/">/</button>
+
+      <button class="button" data-value="4">4</button>
+      <button class="button" data-value="5">5</button>
+      <button class="button" data-value="6">6</button>
+      <button class="button operator" data-value="*">*</button>
+
+      <button class="button" data-value="1">1</button>
+      <button class="button" data-value="2">2</button>
+      <button class="button" data-value="3">3</button>
+      <button class="button operator" data-value="-">-</button>
+
+      <button class="button" data-value=".">.</button>
+      <button class="button" data-value="0">0</button>
+      <button class="button" data-value="C">C</button>
+      <button class="button operator" data-value="+">+</button>
+      <button class="button equals" data-value="=">=</button>
+    </div>
+  </div>
+<script>
+// Select elements
+const display = document.getElementById("display");
+const buttons = document.querySelectorAll(".button");
+let currentInput = "";
+let operator = "";
+let firstOperand = null;
+let secondOperand = null;
+
+// Event listener for buttons
+buttons.forEach(button => {
+  button.addEventListener("click", (event) => {
+    const value = event.target.dataset.value;
+
+    // Handle digit buttons
+    if (value >= "0" && value <= "9") {
+      currentInput += value;
+      display.textContent = currentInput;
+    }
+    //Handles decimal point(.)
+    else if (value === "." && !currentInput.includes(".")) {
+        currentInput += value;
+        display.textContent = currentInput;
+      }
+
+    // Handle operator buttons (+, -, *, /)
+    else if (["+", "-", "*", "/"].includes(value)) {
+      if (firstOperand === null) {
+        firstOperand = parseFloat(currentInput);
+        operator = value;
+        currentInput = "";
+      } else if (currentInput !== "") {
+        secondOperand = parseFloat(currentInput);
+        firstOperand = performCalculation(firstOperand, secondOperand, operator);
+        operator = value;
+        currentInput = "";
+        display.textContent = firstOperand;
+      }
+    }
+
+    // Handle equals button
+    else if (value === "=") {
+      if (firstOperand !== null && currentInput !== "") {
+        secondOperand = parseFloat(currentInput);
+        const result = performCalculation(firstOperand, secondOperand, operator);
+        display.textContent = result;
+        firstOperand = result;
+        operator = "";
+        currentInput = "";
+      }
+    }
+
+    // Handle clear button
+    else if (value === "C") {
+      currentInput = "";
+      firstOperand = null;
+      secondOperand = null;
+      operator = "";
+      display.textContent = "";
+    }
+  });
+});
+
+// Function to perform calculations
+function performCalculation(first, second, operator) {
+  if (operator === "+") {
+    return first + second;
+  } else if (operator === "-") {
+    return first - second;
+  } else if (operator === "*") {
+    return first * second;
+  } else if (operator === "/") {
+    if (second === 0) {
+      alert("Cannot divide by zero!");
+      return first;
+    }
+    return first / second;
+  }
+}
+
+</script>
+</body>
+</html>
